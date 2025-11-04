@@ -4,7 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { appConstants } from "./constants/appConstants";
 import { messageConstants } from "./constants/messageConstants";
-import authRoute from "./routes/auth.route";
+// import authRoute from "./routes/auth.route";
 import { db } from "./config/db.config";
 import { userSyncRoutes } from "./routes/userSync.route";
 import { roleRoutes } from "./routes/role.route";
@@ -80,7 +80,7 @@ if (isProduction) {
   );
 }
 
-authRoute(app);
+//authRoute(app);
 
 const options = {
   info: {
