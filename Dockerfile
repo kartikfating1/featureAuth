@@ -22,7 +22,7 @@ FROM node:18-alpine
 WORKDIR /usr/src/app
 
 # Copy only built files and minimal dependencies
-COPY --from=builder /app/package*.json ./
+COPY --from=builder /usr/src/app/package*.json ./
 RUN npm install --only=production
 
 COPY --from=builder /usr/src/app/dist ./dist
