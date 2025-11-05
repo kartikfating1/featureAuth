@@ -57,7 +57,7 @@ export const appConstants = {
   TOKEN_CONTENT_TYPE: "x-access-token, Origin, Content-Type, Accept",
   BUCKET_NAME: "images-hranalytics",
   PATH_PATTERN: /^https?:\/\/(?:[^/]+)\/([^?]+)/,
-  MONGO_DB: `mongodb://${getUser() || "demo2"}:${getPass() || "demo1234"}@${getURL()}`,
+  MONGO_DB: `mongodb://${getUser() || "demo2"}:${getPass() || "demo1234"}@${getURL()||"mongodb-qa.myapp-qa.svc.cluster.local:27017"}`,
 
   authSource: "admin",
   user: getUser(),
