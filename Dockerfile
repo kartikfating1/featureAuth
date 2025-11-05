@@ -7,30 +7,30 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-# Copy source files
+# Copy all source files
 COPY . .
 
-# Build based on NODE_ENV passed as build-arg
-ARG NODE_ENV=production
-ENV NODE_ENV=$NODE_ENV
-
-RUN npm run build:$NODE_ENV
+# Build for production only
+ENV NODE_ENV=production
+RUN npm run build:production
 
 # Stage 2: Runtime
 FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-# Copy only built files and minimal dependencies
+# Copy only needed files
 COPY --from=builder /usr/src/app/package*.json ./
 RUN npm install --only=production
 
+# Copy the compiled output
 COPY --from=builder /usr/src/app/dist ./dist
 
-# Copy any other necessary files (like .env, etc. if needed)
-# COPY .env .env
-
-# Default environment
+# Set environment
 ENV NODE_ENV=production
 
+# Expose app port (optional but good practice)
+EXPOSE 3015
+
+# Start app (no nodemon)
 CMD ["node", "dist/index.js"]
