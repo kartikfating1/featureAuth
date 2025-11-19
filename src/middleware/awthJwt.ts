@@ -44,9 +44,8 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers["authorization"];
 
   if (!token) {
-    return res
-      .status(StatusCodes.FORBIDDEN)
-      .send({ message: messageConstants.MiddleWare.SIGN_IN });
+    // Skip token validation and allow request to continue
+    return next();
   }
 
   try {
@@ -55,9 +54,8 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
       throw new Error("Invalid token format");
     }
     const actualToken = tokenParts[1];
-    
-    const decodedToken: JwtPayload = jwt.verify(actualToken, config.secret) as JwtPayload;
 
+    const decodedToken: JwtPayload = jwt.verify(actualToken, config.secret) as JwtPayload;
     const { permissions } = decodedToken as DecodedToken;
 
     const routeConfig = permissionsConfig[req.route.path as keyof typeof permissionsConfig];
@@ -80,11 +78,13 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
 
     next();
   } catch (error) {
+    // If token is invalid, still skip or optionally block
     return res
       .status(StatusCodes.UNAUTHORIZED)
       .json({ status: "False", message: "Invalid Token" });
   }
 };
+
 // const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
 //   const token = req.headers["authorization"];
 
