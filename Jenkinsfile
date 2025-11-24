@@ -14,10 +14,10 @@ pipeline {
 
         stage('Set AWS Credentials') {
             steps {
-                withCredentials([
-                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
-                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
-                ]) {
+               withCredentials([
+    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
+])
+                 {
                     bat """
                     setx AWS_ACCESS_KEY_ID %AWS_ACCESS_KEY_ID%
                     setx AWS_SECRET_ACCESS_KEY %AWS_SECRET_ACCESS_KEY%
