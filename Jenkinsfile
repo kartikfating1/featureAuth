@@ -21,19 +21,19 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Run Tests (Optional)') {
             steps {
-                sh 'echo "No tests configured"'
+                bat 'echo "No tests configured"'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh """
+                bat """
                 docker build -t ${ECR_REPO}:${IMAGE_TAG} .
                 docker tag ${ECR_REPO}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                 """
@@ -42,24 +42,24 @@ pipeline {
 
         stage('Login to ECR') {
             steps {
-                sh """
+                bat """
                 aws ecr get-login-password --region ${AWS_REGION} \
                 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                 """
             }
         }
 
-        stage('Push Image to ECR') {
+        stage('Pubat Image to ECR') {
             steps {
-                sh """
-                docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+                bat """
+                docker pubat ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                 """
             }
         }
 
         stage('Update Deployment in EKS') {
             steps {
-                sh """
+                bat """
                 aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
                 kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG} -n mongo
                 kubectl rollout status deployment/${DEPLOYMENT_NAME} -n mongo
