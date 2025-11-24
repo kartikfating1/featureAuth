@@ -2,15 +2,29 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = "ap-south-1"
-        AWS_ACCOUNT_ID = "458945172685"
-        ECR_REPO = "featureauth"
-        CLUSTER_NAME = "my-eks4"
-        DEPLOYMENT_NAME = "featureauth"
-        IMAGE_TAG = "latest"
+        AWS_REGION       = "ap-south-1"
+        AWS_ACCOUNT_ID   = "458945172685"
+        ECR_REPO         = "featureauth"
+        CLUSTER_NAME     = "my-eks4"
+        DEPLOYMENT_NAME  = "featureauth"
+        IMAGE_TAG        = "latest"
     }
 
     stages {
+
+        stage('Set AWS Credentials') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    bat """
+                    setx AWS_ACCESS_KEY_ID %AWS_ACCESS_KEY_ID%
+                    setx AWS_SECRET_ACCESS_KEY %AWS_SECRET_ACCESS_KEY%
+                    """
+                }
+            }
+        }
 
         stage('Checkout Code') {
             steps {
@@ -34,40 +48,36 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 bat """
-                docker build -t %ECR_REPO%:%IMAGE_TAG% .
-                docker tag %ECR_REPO%:%IMAGE_TAG% %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com/%ECR_REPO%:%IMAGE_TAG%
+                docker build -t ${ECR_REPO}:${IMAGE_TAG} .
+                docker tag ${ECR_REPO}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                 """
             }
         }
 
         stage('Login to ECR') {
             steps {
-                withCredentials([aws(credentialsId: 'aws-creds', region: "${AWS_REGION}")]) {
-                    bat """
-                    aws ecr get-login-password --region %AWS_REGION% |
-                    docker login --username AWS --password-stdin %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com
-                    """
-                }
+                bat """
+                aws ecr get-login-password --region ${AWS_REGION} |
+                docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                """
             }
         }
 
         stage('Push Image to ECR') {
             steps {
                 bat """
-                docker push %AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com/%ECR_REPO%:%IMAGE_TAG%
+                docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                 """
             }
         }
 
         stage('Update Deployment in EKS') {
             steps {
-                withCredentials([aws(credentialsId: 'aws-creds', region: "${AWS_REGION}")]) {
-                    bat """
-                    aws eks update-kubeconfig --name %CLUSTER_NAME% --region %AWS_REGION%
-                    kubectl set image deployment/%DEPLOYMENT_NAME% %DEPLOYMENT_NAME%=%AWS_ACCOUNT_ID%.dkr.ecr.%AWS_REGION%.amazonaws.com/%ECR_REPO%:%IMAGE_TAG% -n mongo
-                    kubectl rollout status deployment/%DEPLOYMENT_NAME% -n mongo
-                    """
-                }
+                bat """
+                aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
+                kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG} -n mongo
+                kubectl rollout status deployment/${DEPLOYMENT_NAME} -n mongo
+                """
             }
         }
     }
