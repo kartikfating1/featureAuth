@@ -14,14 +14,8 @@ pipeline {
 
         stage('Set AWS Credentials') {
             steps {
-               withCredentials([
-    [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']
-])
-                 {
-                    bat """
-                    setx AWS_ACCESS_KEY_ID %AWS_ACCESS_KEY_ID%
-                    setx AWS_SECRET_ACCESS_KEY %AWS_SECRET_ACCESS_KEY%
-                    """
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    echo "AWS credentials loaded"
                 }
             }
         }
@@ -54,11 +48,10 @@ pipeline {
             }
         }
 
-        stage('Login to ECR') {
+         stage('Login to ECR') {
             steps {
                 bat """
-                aws ecr get-login-password --region ${AWS_REGION} |
-                docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                aws ecr get-login-password --region %AWS_REGION% | docker login --username AWS --password-stdin %ECR_ACCOUNT%.dkr.ecr.%AWS_REGION%.amazonaws.com
                 """
             }
         }
