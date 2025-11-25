@@ -20,7 +20,10 @@ pipeline {
                 
                 // Set IMAGE_TAG as short Git commit hash
                 script {
-                    IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    IMAGE_TAG = bat(
+                       script: "git rev-parse --short HEAD",
+                       returnStdout: true
+                    ).trim().replaceAll("\\r","") // remove carriage return
                     echo "Using IMAGE_TAG: ${IMAGE_TAG}"
                 }
             }
