@@ -7,7 +7,8 @@ pipeline {
         ECR_REPO         = "featureauth"
         CLUSTER_NAME     = "my-eks4"
         DEPLOYMENT_NAME  = "featureauth"
-        IMAGE_TAG        = "latest"
+        // Use Git commit hash as image tag for uniqueness
+        IMAGE_TAG        = ""
     }
 
     stages {
@@ -16,6 +17,12 @@ pipeline {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/kartikfating1/featureAuth.git'
+                
+                // Set IMAGE_TAG as short Git commit hash
+                script {
+                    IMAGE_TAG = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+                    echo "Using IMAGE_TAG: ${IMAGE_TAG}"
+                }
             }
         }
 
@@ -55,7 +62,7 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Deployment Successful!"
+            echo "🎉 Deployment Successful! IMAGE_TAG: ${IMAGE_TAG}"
         }
         failure {
             echo "❌ Deployment Failed!"
