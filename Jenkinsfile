@@ -7,7 +7,7 @@ pipeline {
         ECR_REPO         = "featureauth"
         CLUSTER_NAME     = "my-eks4"
         DEPLOYMENT_NAME  = "featureauth"
-        IMAGE_TAG        = "" // Will be set dynamically per build
+        IMAGE_TAG        = "latest"
     }
 
     stages {
@@ -16,12 +16,6 @@ pipeline {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/kartikfating1/featureAuth.git'
-
-                script {
-                    // Use Jenkins BUILD_NUMBER as unique tag
-                    IMAGE_TAG = "${BUILD_NUMBER}"
-                    echo "Using IMAGE_TAG: ${IMAGE_TAG}"
-                }
             }
         }
 
@@ -52,7 +46,6 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
 
-                    // Update Kubernetes deployment with new image
                     bat """
                     aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
                     kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG} -n mongo
@@ -65,7 +58,7 @@ pipeline {
 
     post {
         success {
-            echo "🎉 Deployment Successful! IMAGE_TAG: ${IMAGE_TAG}"
+            echo "🎉 Deployment Successful!"
         }
         failure {
             echo "❌ Deployment Failed!"
