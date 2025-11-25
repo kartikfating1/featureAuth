@@ -7,8 +7,7 @@ pipeline {
         ECR_REPO         = "featureauth"
         CLUSTER_NAME     = "my-eks4"
         DEPLOYMENT_NAME  = "featureauth"
-        // Use Git commit hash as image tag for uniqueness
-        IMAGE_TAG        = ""
+        IMAGE_TAG        = "" // will be set dynamically per build
     }
 
     stages {
@@ -18,12 +17,13 @@ pipeline {
                 git branch: 'main',
                     url: 'https://github.com/kartikfating1/featureAuth.git'
                 
-                // Set IMAGE_TAG as short Git commit hash
                 script {
-                    IMAGE_TAG = bat(
-                       script: "git rev-parse --short HEAD",
-                       returnStdout: true
-                    ).trim().replaceAll("\\r","") // remove carriage return
+                    // Use PowerShell to get short Git commit hash for IMAGE_TAG
+                    IMAGE_TAG = powershell(
+                        returnStdout: true, 
+                        script: 'git rev-parse --short HEAD'
+                    ).trim()
+                    
                     echo "Using IMAGE_TAG: ${IMAGE_TAG}"
                 }
             }
