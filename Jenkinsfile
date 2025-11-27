@@ -30,18 +30,18 @@ pipeline {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
 
                     // Build and tag Docker image
-                    bat """
+                    sh """
                     docker build -t ${ECR_REPO}:${IMAGE_TAG} .
                     docker tag ${ECR_REPO}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                     """
 
                     // Login to AWS ECR
-                    bat """
+                    sh """
                     for /f "delims=" %%i in ('aws ecr get-login-password --region ${AWS_REGION}') do docker login --username AWS --password %%i ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
                     """
 
                     // Push Docker image to ECR
-                    bat """
+                    sh """
                     docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                     """
                 }
@@ -53,7 +53,7 @@ pipeline {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
 
                     // Update Kubernetes deployment with new image
-                    bat """
+                    sh """
                     aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
                     kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG} -n mongo
                     kubectl rollout status deployment/${DEPLOYMENT_NAME} -n mongo
