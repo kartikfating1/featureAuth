@@ -7,7 +7,7 @@ pipeline {
         ECR_REPO         = "featureauth"
         CLUSTER_NAME     = "my-eks4"
         DEPLOYMENT_NAME  = "featureauth"
-        IMAGE_TAG        = "" // Will be set dynamically per build
+        IMAGE_TAG        = ""   // dynamically set
     }
 
     stages {
@@ -29,18 +29,21 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
 
-                    // Build and tag Docker image
+                    // Authenticate to AWS ECR
+                    sh """
+                    aws ecr get-login-password --region ${AWS_REGION} \
+                        | docker login --username AWS --password-stdin \
+                          ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    """
+
+                    // Build & Tag Docker Image
                     sh """
                     docker build -t ${ECR_REPO}:${IMAGE_TAG} .
-                    docker tag ${ECR_REPO}:${IMAGE_TAG} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
+                    docker tag ${ECR_REPO}:${IMAGE_TAG} \
+                        ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                     """
 
-                    // Login to AWS ECR
-                    sh """
-                    for /f "delims=" %%i in ('aws ecr get-login-password --region ${AWS_REGION}') do docker login --username AWS --password %%i ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-                    """
-
-                    // Push Docker image to ECR
+                    // Push to ECR
                     sh """
                     docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}
                     """
@@ -52,10 +55,11 @@ pipeline {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
 
-                    // Update Kubernetes deployment with new image
                     sh """
                     aws eks update-kubeconfig --name ${CLUSTER_NAME} --region ${AWS_REGION}
+
                     kubectl set image deployment/${DEPLOYMENT_NAME} ${DEPLOYMENT_NAME}=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG} -n mongo
+                    
                     kubectl rollout status deployment/${DEPLOYMENT_NAME} -n mongo
                     """
                 }
