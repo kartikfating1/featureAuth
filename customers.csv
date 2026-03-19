@@ -1,0 +1,11 @@
+customerId,name,age,gender,city,email,phone,createdDate
+1,Amit Sharma,30,Male,Pune,amit@gmail.com,9876543210,2023-01-10
+2,Ravi Verma,42,Male,Mumbai,ravi@gmail.com,9876543211,2022-11-05
+3,Neha Singh,29,Female,Delhi,neha@gmail.com,9876543212,2023-03-15
+4,Pooja Patel,35,Female,Bangalore,pooja@gmail.com,9876543213,2021-12-20
+5,Karan Mehta,27,Male,Pune,karan@gmail.com,9876543214,2023-06-18
+6,Anjali Gupta,31,Female,Delhi,anjali@gmail.com,9876543215,2022-09-25
+7,Rohit Jain,45,Male,Mumbai,rohit@gmail.com,9876543216,2020-08-14
+8,Sneha Kulkarni,26,Female,Pune,sneha@gmail.com,9876543217,2023-07-01
+9,Vikas Yadav,38,Male,Delhi,vikas@gmail.com,9876543218,2021-05-11
+10,Meera Iyer,33,Female,Bangalore,meera@gmail.com,9876543219,2022-02-22
