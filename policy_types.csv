@@ -1,0 +1,9 @@
+typeId,typeName,domain
+T1,Health Basic,Health
+T2,Health Premium,Health
+T3,Health Family,Health
+T4,Health Senior,Healths
+T5,Life Term,Life
+T6,Life Whole,Life
+T7,Life ULIP,Life
+T8,Life Child,Life

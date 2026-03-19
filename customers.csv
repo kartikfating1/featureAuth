@@ -1,11 +1,41 @@
-customerId,name,age,gender,city,email,phone,createdDate
-1,Amit Sharma,30,Male,Pune,amit@gmail.com,9876543210,2023-01-10
-2,Ravi Verma,42,Male,Mumbai,ravi@gmail.com,9876543211,2022-11-05
-3,Neha Singh,29,Female,Delhi,neha@gmail.com,9876543212,2023-03-15
-4,Pooja Patel,35,Female,Bangalore,pooja@gmail.com,9876543213,2021-12-20
-5,Karan Mehta,27,Male,Pune,karan@gmail.com,9876543214,2023-06-18
-6,Anjali Gupta,31,Female,Delhi,anjali@gmail.com,9876543215,2022-09-25
-7,Rohit Jain,45,Male,Mumbai,rohit@gmail.com,9876543216,2020-08-14
-8,Sneha Kulkarni,26,Female,Pune,sneha@gmail.com,9876543217,2023-07-01
-9,Vikas Yadav,38,Male,Delhi,vikas@gmail.com,9876543218,2021-05-11
-10,Meera Iyer,33,Female,Bangalore,meera@gmail.com,9876543219,2022-02-22
+customerId,name,age,city
+C1,Rahul,30,Mumbai
+C2,Anita,28,Pune
+C3,Vikas,35,Delhi
+C4,Meera,32,Mumbai
+C5,Amit,40,Bangalore
+C6,Pooja,27,Pune
+C7,Suresh,45,Delhi
+C8,Kavita,29,Mumbai
+C9,Ramesh,38,Chennai
+C10,Neha,31,Pune
+C11,Arjun,26,Delhi
+C12,Simran,33,Mumbai
+C13,Deepak,41,Bangalore
+C14,Nisha,24,Pune
+C15,Karan,36,Delhi
+C16,Alok,39,Mumbai
+C17,Divya,28,Chennai
+C18,Manish,42,Bangalore
+C19,Tina,30,Pune
+C20,Ajay,37,Delhi
+C21,Ritu,34,Mumbai
+C22,Varun,29,Bangalore
+C23,Shreya,31,Pune
+C24,Gaurav,40,Delhi
+C25,Sneha,27,Mumbai
+C26,Anil,43,Bangalore
+C27,Raj,35,Pune
+C28,Priya,32,Delhi
+C29,Kunal,38,Mumbai
+C30,Payal,26,Chennai
+C31,Sameer,41,Pune
+C32,Isha,29,Delhi
+C33,Rohit,36,Mumbai
+C34,Sonal,33,Bangalore
+C35,Ashish,44,Pune
+C36,Komal,28,Delhi
+C37,Nitin,39,Mumbai
+C38,Riya,30,Chennai
+C39,Sachin,42,Bangalore
+C40,Monika,31,Pune
